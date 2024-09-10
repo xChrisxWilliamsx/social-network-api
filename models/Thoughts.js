@@ -16,10 +16,11 @@ const reactionsSchema = new Schema(
             type: String,
             required: true,
         },
-        timestamps: { 
-            createdAt: 'created_at', 
-            updatedAt: 'updated_at' 
-        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+            get: (timestamp) => new Date(timestamp).toLocaleString()
+        }
     }
 );
 
@@ -35,9 +36,10 @@ const thoughtsSchema = new Schema(
             type: String,
             required: true
         },
-        timestamps: { 
-            createdAt: 'created_at', 
-            updatedAt: 'updated_at' 
+        createdAt: {
+            type: Date,
+            default: Date.now,
+            get: (timestamp) => new Date(timestamp).toLocaleString()
         },
         reactions: [reactionsSchema]
     },
