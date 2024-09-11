@@ -12,7 +12,7 @@ module.exports = {
 
     async getSingleThought(req, res) {
         try {
-            const thought = await Thoughts.findOne({ id: req.params.id })
+            const thought = await Thoughts.findById({ _id: req.params.id })
             if (!thought) {
                 return res.status(404).json({ message: 'No thought found with that ID..' });
             }
@@ -24,12 +24,12 @@ module.exports = {
 
     async createThought(req, res) {
         try {
-            const createdThought = await Thoughts.create(req.body);
-            const user = await Users.findOneAndUpdate(
-                { id: req.body.id },
+            const thought = await Thoughts.create(req.body);
+            const user = await Users.findByIdAndUpdate(
+                { _id: req.params.userId },
                 { $addToSet: 
                     { 
-                        thoughts: createdThought.id 
+                        thoughts: thought.id 
                     } 
                 },
                 { new: true }
@@ -37,9 +37,9 @@ module.exports = {
             if (!user) {
                 return res.status(404).json({
                     message: 'Thought created, however no user found matching that ID.. ',
-                })
+            })
             }
-            res.json(createdThought);
+            res.json(thought.id);
         } catch (err) {
             res.status(500).json(err);
         }
@@ -47,8 +47,8 @@ module.exports = {
 
     async updateThought(req, res) {
         try {
-            const updatedThought = await Thoughts.findOneAndUpdate(
-                { id: req.params.id },
+            const updatedThought = await Thoughts.findByIdAndUpdate(
+                { _id: req.params.id },
                 { 
                     text: req.body.text,
                     username: req.body.username,
@@ -63,7 +63,7 @@ module.exports = {
 
     async deleteThought(req, res) {
         try {
-            const deletedThought = await Thoughts.findOneAndDelete({ id: req.params.id });
+            const deletedThought = await Thoughts.findByIdAndDelete({ _id: req.params.id });
             if (!deletedThought) {
                 return res.status(404).json({ message: 'No thought with that ID..' });
             }
@@ -75,18 +75,13 @@ module.exports = {
 
     async addThoughtReaction(req, res) {
         try {
-            const addReaction = await Thoughts.findOneAndUpdate(
-                { id: req.params.id },
-                { $addToSet: 
-                    { 
-                        reactions: req.body 
-                    } 
-                }
-            );
-            if (!addReaction) {
+            const thought = await Thoughts.findById({ _id: req.params.id })
+            if (!thought) {
                 return res.status(404).json({ message: 'No thought with this ID..' });
             }
-            res.json(addReaction);
+            thought.reactions.push(req.body);
+            await thought.save();
+            res.json(thought);
         } catch (err) {
             res.status(500).json(err);
         }
@@ -94,20 +89,13 @@ module.exports = {
 
     async deleteThoughtReaction(req, res) {
         try {
-            const deleteReaction = await Thoughts.findOneAndUpdate(
-                { id: req.params.id },
-                { $pull: 
-                    { 
-                        reactions: { 
-                            id: req.params.id 
-                        } 
-                    } 
-                },
-            );
-            if (!deleteReaction) {
-              return res.status(404).json({ message: 'No reaction with this ID..' });
+            const thought = await Thoughts.findById({ _id: req.params.id });
+            if (!thought) {
+              return res.status(404).json({ message: 'ID not found..' });
             }
-            res.json(deleteReaction);
+            thought.reactions.pull(req.params.reactionId)
+            await thought.save();
+            res.json(thought);
         } catch (err) {
             res.status(500).json(err);
         }
