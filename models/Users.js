@@ -18,21 +18,20 @@ const usersSchema = new Schema(
             match: [/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/, "Email invalid!"], 
         },
         thoughts: [
-            { 
-                type: Schema.Types.ObjectId, ref: 'thoughts' 
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'thoughts'
             }
         ],
         friends: [
             { 
-                type: Schema.Types.ObjectId, ref: 'Users' 
+                type: Schema.Types.ObjectId,
+                ref: 'users' 
             }
         ],
     },
     {
         toJSON: {
-            virtuals: true,
-        },
-        toObject: {
             virtuals: true,
         }
     }

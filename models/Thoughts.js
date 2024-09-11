@@ -3,10 +3,6 @@ const { Schema, model } = require('mongoose');
 
 const reactionsSchema = new Schema(
     {
-        id: {
-            type: Schema.Types.ObjectId,
-            default: () => new Types.ObjectId(),
-        },
         reactionBody: {
             type: String,
             required: true,
@@ -16,11 +12,10 @@ const reactionsSchema = new Schema(
             type: String,
             required: true,
         },
-        createdAt: {
+        created_at: { 
             type: Date,
-            default: Date.now,
-            get: (timestamp) => new Date(timestamp).toLocaleString()
-        }
+            default: Date.now 
+        },
     }
 );
 
@@ -36,18 +31,14 @@ const thoughtsSchema = new Schema(
             type: String,
             required: true
         },
-        createdAt: {
+        created_at: { 
             type: Date,
-            default: Date.now,
-            get: (timestamp) => new Date(timestamp).toLocaleString()
+            default: Date.now 
         },
         reactions: [reactionsSchema]
     },
     {
         toJSON: {
-            virtuals: true,
-        },
-        toObject:{
             virtuals: true,
         }
     }
